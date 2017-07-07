@@ -7,7 +7,7 @@ http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/m
 http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-current.xsd">
     <http:listener-config name="AmericanAPI_GA-httpListenerConfig" host="0.0.0.0" port="${http.port}" doc:name="HTTP Listener Configuration"/>
     <apikit:config name="AmericanAPI_GA-config" raml="AmericanAPI_GA.raml" consoleEnabled="false" doc:name="Router"/>
-    <context:property-placeholder location="american-${env}.properties"/>
+    <context:property-placeholder location="american-${ENV}.properties"/>
     <flow name="AmericanAPI_GA-main">
         <http:listener config-ref="AmericanAPI_GA-httpListenerConfig" path="/api/*" doc:name="HTTP"/>
         <apikit:router config-ref="AmericanAPI_GA-config" doc:name="APIkit Router"/>

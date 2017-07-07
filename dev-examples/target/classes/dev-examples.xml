@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:vm="http://www.mulesoft.org/schema/mule/vm" xmlns:batch="http://www.mulesoft.org/schema/mule/batch" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
+http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd">
+    <http:listener-config name="HTTP_Listener_Configuration" host="0.0.0.0" port="8081"  doc:name="HTTP Listener Configuration"/>
+    <http:request-config name="HTTP_Request_Configuration" host="localhost" port="8081" connectionIdleTimeout="200000" doc:name="HTTP Request Configuration"/>
+    <flow name="dev-examplesFlow">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/hello" doc:name="HTTP"/>
+        <flow-ref name="subflow1" doc:name="subflow1"/>
+        <flow-ref name="subflow2" doc:name="subflow2"/>
+        <logger level="INFO" doc:name="Logger"/>
+        <http:request config-ref="HTTP_Request_Configuration" path="/flow2" method="GET" doc:name="HTTP"/>
+        <vm:outbound-endpoint exchange-pattern="request-response" path="flow3Vm" doc:name="VM"/>
+        <logger message="#[flowVars.gshaikVar1]  #[message.outboundProperties.gayazprop1] #[sessionVars.color]" level="INFO" doc:name="Logger"/>
+    </flow>
+    <flow name="flow2">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/flow2" doc:name="HTTP"/>
+        <set-payload value="good bye	" doc:name="Set Payload"/>
+        <logger level="INFO" doc:name="Logger"/>
+    </flow>
+    <flow name="flow3">
+        <vm:inbound-endpoint exchange-pattern="request-response" path="flow3Vm" doc:name="VM"/>
+        <set-payload value="see you	" doc:name="Set Payload"/>
+        <logger level="INFO" doc:name="Logger"/>
+    </flow>
+    <sub-flow name="subflow1">
+        <set-payload value="hello world " doc:name="Set Payload"/>
+        <set-property propertyName="gayazprop1" value="1234" doc:name="Property"/>
+    </sub-flow>
+    <sub-flow name="subflow2">
+        <set-variable variableName="gshaikVar1" value="#[message.inboundProperties.'http.query.params'.qname]" doc:name="Variable"/>
+        <set-session-variable variableName="color" value="grey" doc:name="Session Variable"/>
+    </sub-flow>
+</mule>
