@@ -13,4 +13,23 @@ http://www.mulesoft.org/schema/mule/ws http://www.mulesoft.org/schema/mule/ws/cu
     <http:request-config name="United_HTTP_Request_Configuration" host="${united.host}" port="80" doc:name="HTTP Request Configuration"/>
     <http:request-config name="American_HTTP_Request_Configuration" host="dbconnectwithraml.cloudhub.io" port="80" basePath="/api" doc:name="HTTP Request Configuration"/>
     <ws:consumer-config name="Web_Service_Consumer" service="TicketServiceService" port="TicketServicePort" serviceAddress="http://training-u.cloudhub.io/essentials/delta" wsdlLocation="http://mu.mulesoft-training.com/essentials/delta?wsdl" doc:name="Web Service Consumer"/>
+    <choice-exception-strategy name="Choice_Exception_Strategy_Gshaik">
+        <catch-exception-strategy when="#[exception.causeMatches('com.mulesoft.weave.*')]" doc:name="Catch Exception Strategy Weave">
+            <set-payload value="#['no flights ggss \n'+exception ]" doc:name="Set Payload"/>
+            <logger level="INFO" doc:name="Logger"/>
+        </catch-exception-strategy>
+        <catch-exception-strategy when="#[exception.causedExactlyBy(org.mule.module.ws.consumer.SoapFaultException)]" doc:name="Catch Exception Strategy Soap">
+            <set-payload value="#['SOAP related exception   ggss \n:'+exception]" doc:name="Set Payload"/>
+            <logger level="INFO" doc:name="Logger"/>
+        </catch-exception-strategy>
+        <catch-exception-strategy when="#[exception.causeMatches('org.mule.module.ws.*')]" doc:name="Catch Exception Strategy">
+            <set-payload value="#['SOAP related exception ggss  \n :'+exception]" doc:name="Set Payload"/>
+            <logger level="INFO" doc:name="Copy_of_Logger"/>
+        </catch-exception-strategy>
+                <catch-exception-strategy when="#[exception.causeMatches('java.lang.*')]" doc:name="Catch Exception Strategy_LANG">
+            <set-payload value="#['Other exception ....ggss  \n'+exception ]" doc:name="Set Payload"/>
+            <logger level="INFO" doc:name="Logger"/>
+        </catch-exception-strategy>
+    </choice-exception-strategy>
+
 </mule>
