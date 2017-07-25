@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd">
+    <http:listener-config name="HTTP_Listener_Configuration" host="0.0.0.0" port="8081" doc:name="HTTP Listener Configuration"/>
+    
+    <spring:beans>
+    <spring:bean name="test3" class="experiment.Test3" scope="prototype"/>
+    </spring:beans>
+    <flow name="Javaexp1">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/java1" allowedMethods="GET" doc:name="HTTP"/>
+        <component class="experiment.Test" doc:name="Java"/>
+        <logger level="INFO" doc:name="Logger"/>
+    </flow>
+    <flow name="JavaExp2">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/java2" allowedMethods="GET" doc:name="HTTP"/>
+        <component class="experiment.Test2" doc:name="Java"/>
+        <set-payload value="#[flowVars.myProperty]" doc:name="Set Payload"/>
+        <echo-component doc:name="Echo"/>
+        <logger level="INFO" doc:name="Logger"/>
+    </flow>
+    <flow name="Javaexp3">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/java3" allowedMethods="GET" doc:name="_HTTP"/>
+        <invoke name="Invoke1" object-ref="test3" method="testMethod1"/>
+        <echo-component doc:name="Echo"/>
+        <invoke name="Invoke2" object-ref="test3" method="testMethod2"/>
+        <echo-component doc:name="Echo"/>
+        <invoke name="Invoke3" object-ref="test3" method="testMethod3" methodArguments="#['12'] , #['34']"/>
+        <echo-component doc:name="Echo"/>
+        <logger level="INFO" doc:name="Logger"/>
+    </flow>
+</mule>
